@@ -18,44 +18,38 @@ export function LearnView() {
   const known = new Map((learned ?? []).map((item) => [item.ruleId, item]));
   const count = RULES.filter((rule) => known.has(rule.id)).length;
   const ready = learned !== null;
+  const ordered = [...RULES].sort((a, b) => Number(known.has(b.id)) - Number(known.has(a.id)));
 
   return (
     <Shell>
-      <p className="text-xs font-semibold tracking-[0.16em] text-[#3ddc97]">RULES YOU HAVE OPENED</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+      <p className="font-display mt-5 text-sm uppercase tracking-[0.16em]">Rules you’ve opened</p>
+      <h1 className="font-display mt-1 text-6xl font-semibold uppercase leading-none tabular-nums">
         {ready ? `${count} of ${RULES.length}` : "—"}
       </h1>
-      <p className="mt-2 max-w-lg text-sm leading-6 text-white/55">
-        A rule counts when you open its explanation. Scrolling past a play does not. This list stays in this browser.
+      <p className="mt-3 max-w-lg text-sm leading-6">
+        Opening an explanation counts. Scrolling past a play does not. This list stays in this browser.
       </p>
-      <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/10">
+      <div className="mt-4 h-1 bg-[#1c140c]/15">
         <div
-          className="h-full bg-[#ff6a00]"
+          className="h-full bg-[#1c140c]"
           style={{ width: ready ? `${(count / RULES.length) * 100}%` : "0%" }}
         />
       </div>
-      <ul className="mt-6 space-y-2">
-        {RULES.map((rule) => {
+      <ul className="paper mt-6 border border-[#1c140c]">
+        {ordered.map((rule) => {
           const item = known.get(rule.id);
           return (
-            <li key={rule.id} className="rounded-2xl border border-white/8 bg-[#141820] px-4 py-3">
+            <li key={rule.id} className="border-b border-[#1c140c]/15 px-4 py-3 last:border-b-0">
               <div className="flex items-start gap-3">
-                <span
-                  className={
-                    item
-                      ? "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#123226] text-xs text-[#3ddc97]"
-                      : "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/15 text-[10px] text-white/30"
-                  }
-                  aria-hidden
-                >
+                <span className="font-display mt-0.5 w-4 shrink-0 text-sm" aria-hidden>
                   {item ? "✓" : ""}
                 </span>
                 <div>
-                  <p className="font-medium">{rule.name}</p>
+                  <p className="font-display text-xl uppercase leading-none">{rule.name}</p>
                   {item ? (
-                    <p className="mt-1 text-sm leading-5 text-white/60">{rule.lesson}</p>
+                    <p className="mt-1 text-sm leading-5">{rule.lesson}</p>
                   ) : (
-                    <p className="mt-1 text-sm text-white/35">Not seen yet. It lights up the first time you open that explanation.</p>
+                    <p className="mt-1 text-sm text-[#1c140c]/55">Not yet. It shows up the first time you open that explanation.</p>
                   )}
                 </div>
               </div>

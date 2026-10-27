@@ -32,11 +32,11 @@ export function ReplayScreen() {
     <Court
       game={game}
       banner={
-        <div className="mt-3 rounded-2xl border border-[#ff7a1a]/30 bg-[#24180f] px-3 py-2.5">
+        <div className="paper mt-3 border border-[#1c140c] px-3 py-2.5">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[11px] font-semibold tracking-[0.14em] text-[#ff9a3c]">REPLAY · NOT LIVE</p>
-              <p className="truncate text-xs text-[#ffd7bf]">
+              <p className="font-display text-xs uppercase tracking-[0.14em] text-[#9a3412]">Replay · not live</p>
+              <p className="truncate text-xs">
                 {game.away.shortName} at {game.home.shortName} · {when} · real ESPN feed
               </p>
             </div>
@@ -62,7 +62,7 @@ export function ReplayScreen() {
               </Button>
               <button
                 type="button"
-                className="rounded-full px-2 py-1 text-xs font-semibold text-[#ffd7bf]"
+                className="font-display px-2 py-1 text-xs uppercase tracking-wide"
                 onClick={() => setSpeed((value) => (value === 1 ? 2 : 1))}
               >
                 {speed}×
@@ -70,14 +70,14 @@ export function ReplayScreen() {
             </div>
           </div>
           <div className="mt-2 flex flex-wrap gap-2 text-xs">
-            <button type="button" className="text-[#ffb089] underline-offset-2 hover:underline" onClick={() => { setIndex(-1); setPlaying(true); }}>
+            <button type="button" className="underline underline-offset-2" onClick={() => { setIndex(-1); setPlaying(true); }}>
               From the tip
             </button>
-            <button type="button" className="text-[#ffb089] underline-offset-2 hover:underline" onClick={() => { setIndex(jumpIndex); setPlaying(true); }}>
+            <button type="button" className="underline underline-offset-2" onClick={() => { setIndex(jumpIndex); setPlaying(true); }}>
               Jump to the 4th
             </button>
             {atEnd ? (
-              <button type="button" className="text-white underline-offset-2 hover:underline" onClick={() => { setIndex(jumpIndex); setPlaying(true); }}>
+              <button type="button" className="underline underline-offset-2" onClick={() => { setIndex(jumpIndex); setPlaying(true); }}>
                 Watch again
               </button>
             ) : null}

@@ -1,10 +1,12 @@
 "use client";
 
-import { Check, Star, ThumbsDown, ThumbsUp, X } from "lucide-react";
+import { ThumbsDown, ThumbsUp, X } from "lucide-react";
 
+import { HalfCourt } from "@/components/half-court";
 import { Button } from "@/components/ui/button";
 import { RichText } from "@/components/rich-text";
 import type { RephraseState } from "@/components/use-play-session";
+import type { CourtSpot } from "@/lib/spot";
 import type { Explanation, Vote } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +16,8 @@ export function ExplainCard({
   isNewRule,
   vote,
   rephrase,
+  spot,
+  made,
   onChoose,
   onVote,
   onClose,
@@ -23,6 +27,8 @@ export function ExplainCard({
   isNewRule: boolean;
   vote: Vote | null;
   rephrase: RephraseState;
+  spot?: CourtSpot;
+  made?: boolean;
   onChoose: (id: string) => void;
   onVote: (vote: Vote) => void;
   onClose?: () => void;
@@ -37,28 +43,28 @@ export function ExplainCard({
   const why = rewritten?.why ?? selected.whyItMatters;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-0 flex-1 flex-col text-[#1c140c]">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 id="explain-title" className="text-[22px] font-semibold leading-tight tracking-tight sm:text-[26px]">
+          <p className="font-display text-xs uppercase tracking-[0.14em] text-[#1c140c]/55">Ref card</p>
+          <h2 id="explain-title" className="font-display text-3xl font-semibold uppercase leading-none tracking-wide">
             Which play did you just see?
           </h2>
-          <p className="mt-1 text-sm text-white/55">Your TV may be a few seconds ahead or behind.</p>
+          <p className="mt-1 text-sm leading-5">TV’s usually a few seconds off. Pick the one you saw.</p>
         </div>
         {onClose ? (
-          <Button
-            variant="outline"
-            size="icon"
-            className="shrink-0"
+          <button
+            type="button"
+            className="flex h-9 w-9 shrink-0 items-center justify-center border border-[#1c140c]"
             onClick={onClose}
             aria-label="Close explanation"
           >
             <X className="h-4 w-4" />
-          </Button>
+          </button>
         ) : null}
       </div>
 
-      <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+      <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
         {picker.map((chip) => {
           const active = chip.playId === selected.playId;
           return (
@@ -67,62 +73,52 @@ export function ExplainCard({
               type="button"
               onClick={() => onChoose(chip.playId)}
               className={cn(
-                "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm",
-                active
-                  ? "border border-[#ff7a1a] bg-[#ff7a1a]/12 text-white"
-                  : "bg-[#2a3142] text-white/75 hover:text-white",
+                "font-display shrink-0 border px-2.5 py-1 text-sm uppercase tracking-wide",
+                active ? "border-[#1c140c] bg-[#1c140c] text-[#f4efe4]" : "border-[#1c140c]/40 bg-transparent",
               )}
               aria-pressed={active}
             >
-              {active ? <Check className="h-3.5 w-3.5 text-[#ff9a3c]" /> : null}
               {chip.chip}
             </button>
           );
         })}
       </div>
 
-      <div className="mt-4 rounded-[22px] bg-[#12151c] px-4 py-4">
-        <p className="text-[11px] font-semibold tracking-[0.16em] text-white/40">
-          {selected.clockLabel} · EXPLAINED
-        </p>
-        <h3 className="mt-1 text-[26px] font-semibold tracking-tight">{title}</h3>
-        <RichText text={body} className="mt-2 block text-[16px] leading-6 text-white/88" />
-
-        <div className="relative mt-4 rounded-2xl bg-[#2a2118] px-4 py-3">
-          <span className="absolute bottom-3 left-0 top-3 w-1 rounded-full bg-[#ff7a1a]" />
-          <p className="pl-2 text-[11px] font-semibold tracking-[0.14em] text-[#ff9a3c]">WHY IT MATTERS</p>
-          <RichText text={why} className="mt-1 block pl-2 text-[15px] leading-snug text-white/90" />
+      <div className="mt-4 flex flex-col gap-4 sm:flex-row">
+        <HalfCourt spot={spot} made={made} />
+        <div className="min-w-0 flex-1">
+          <p className="font-display text-xs uppercase tracking-[0.12em] text-[#1c140c]/55">
+            {selected.clockLabel}
+          </p>
+          <h3 className="font-display text-4xl font-semibold uppercase leading-none tracking-wide">{title}</h3>
+          <RichText text={body} className="mt-2 block text-[16px] leading-6" />
+          <div className="mt-3 border-t border-[#1c140c] pt-2">
+            <p className="font-display text-sm uppercase tracking-wide">Why it matters</p>
+            <RichText text={why} className="mt-1 block text-[15px] leading-snug" />
+          </div>
+          {isNewRule ? (
+            <p className="font-display mt-3 inline-block -rotate-1 border-2 border-[#e25b1a] px-2 py-0.5 text-sm uppercase tracking-wide text-[#e25b1a]">
+              New · {selected.ruleName}
+            </p>
+          ) : (
+            <p className="mt-3 text-sm text-[#1c140c]/70">Rule: {selected.ruleName}</p>
+          )}
+          {rewritten ? <p className="mt-2 text-xs text-[#1c140c]/60">Rephrased from the feed. Nothing added.</p> : null}
+          {rejected ? (
+            <p className="mt-2 text-xs text-[#9a3412]">Tossed a rephrase. It added something the feed didn’t say.</p>
+          ) : null}
         </div>
-
-        {isNewRule ? (
-          <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-[#123226] px-3 py-1.5 text-sm text-[#c8f8d8]">
-            <Star className="h-3.5 w-3.5 fill-[#3ddc97] text-[#3ddc97]" />
-            New rule learned: {selected.ruleName}
-          </p>
-        ) : (
-          <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/6 px-3 py-1.5 text-sm text-white/60">
-            Rule: {selected.ruleName}
-          </p>
-        )}
-        {rewritten ? (
-          <p className="mt-2 text-xs text-white/40">Rephrased from the feed facts only.</p>
-        ) : null}
-        {rejected ? (
-          <p className="mt-2 text-xs text-[#ffb089]">
-            A rephrase was discarded because it added something that was not in the feed.
-          </p>
-        ) : null}
       </div>
 
-      <div className="mt-4 flex items-center justify-between">
-        <p className="text-[15px] text-white/75">Was this clear?</p>
+      <div className="mt-4 flex items-center justify-between border-t border-[#1c140c]/20 pt-3">
+        <p className="text-[15px]">Clear enough?</p>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="icon"
             aria-label="Yes, this was clear"
             aria-pressed={vote === "up"}
-            className={cn(vote === "up" && "border-[#ff7a1a] bg-[#ff7a1a]/15")}
+            className={cn(vote === "up" && "bg-[#1c140c] text-[#f4efe4]")}
             onClick={() => onVote("up")}
           >
             <ThumbsUp className="h-4 w-4" />
@@ -132,7 +128,7 @@ export function ExplainCard({
             size="icon"
             aria-label="No, this was not clear"
             aria-pressed={vote === "down"}
-            className={cn(vote === "down" && "border-white/40 bg-white/10")}
+            className={cn(vote === "down" && "bg-[#1c140c] text-[#f4efe4]")}
             onClick={() => onVote("down")}
           >
             <ThumbsDown className="h-4 w-4" />

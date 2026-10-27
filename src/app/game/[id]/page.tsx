@@ -21,11 +21,11 @@ function GameShell() {
   return (
     <div className="mx-auto w-full max-w-[440px] px-4 pt-6">
       <div className="h-14" />
-      <div className="h-44 animate-pulse rounded-[28px] bg-white/5" />
+      <div className="h-36 animate-pulse bg-[#1c140c]/10" />
       <div className="mt-4 space-y-2">
-        <div className="h-16 animate-pulse rounded-2xl bg-white/5" />
-        <div className="h-16 animate-pulse rounded-2xl bg-white/5" />
-        <div className="h-16 animate-pulse rounded-2xl bg-white/5" />
+        <div className="h-12 animate-pulse bg-[#1c140c]/10" />
+        <div className="h-12 animate-pulse bg-[#1c140c]/10" />
+        <div className="h-12 animate-pulse bg-[#1c140c]/10" />
       </div>
     </div>
   );

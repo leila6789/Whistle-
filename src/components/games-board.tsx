@@ -7,7 +7,7 @@ import { Shell } from "@/components/shell";
 import { DEMO_CARD } from "@/lib/demo-meta";
 import { SCOREBOARD_POLL_MS } from "@/lib/config";
 import { formatDay, formatTipTime } from "@/lib/clock";
-import { textOn } from "@/lib/teams";
+import { paint } from "@/lib/teams";
 import type { GameCard, Scoreboard } from "@/lib/types";
 
 export function GamesBoard() {
@@ -43,55 +43,83 @@ export function GamesBoard() {
 
   const games = board?.games ?? [];
   const today = formatDay(games[0]?.startTime);
+  const live = games.some((game) => game.status === "in");
+  const nextTip = games.find((game) => game.status === "pre");
 
   return (
     <Shell>
-      <div className="pt-2">
-        <p className="text-xs font-semibold tracking-[0.16em] text-[#ff9a3c]">NBA, IN PLAIN ENGLISH</p>
-        <h1 className="mt-2 max-w-xl text-[2rem] font-semibold leading-tight tracking-tight">
+      <div className="pt-5">
+        <p className="font-display text-sm uppercase tracking-[0.16em]">NBA, in plain English</p>
+        <h1 className="font-display mt-1 text-5xl font-semibold uppercase leading-none tracking-wide">
           What just happened?
         </h1>
-        <p className="mt-3 max-w-xl text-[15px] leading-6 text-white/60">
-          A live companion for people who do not know the rules yet. Open a game, and when the broadcast loses you, tap one button.
+        <p className="mt-3 max-w-xl text-[16px] leading-6">
+          For when the broadcast loses you. Open a game, tap the button, get the rule in plain words.
         </p>
-        <p className="mt-4 text-sm text-white/45">
+        <p className="mt-4 font-display text-sm uppercase tracking-wide text-[#1c140c]/70">
           {today || "Today"}
           {board?.seasonLabel ? ` · ${board.seasonLabel}` : ""}
         </p>
+        {!loading && board && !live && nextTip ? (
+          <p className="mt-1 text-sm">Nothing live yet. Tip-off’s at {formatTipTime(nextTip.startTime)}.</p>
+        ) : null}
       </div>
 
-      {games.length > 0 ? <ReplayStrip /> : null}
-
-      <div className="mt-4 space-y-3">
+      <div className="paper mt-5 border border-[#1c140c]">
         {loading && !board ? (
-          <>
-            <div className="h-28 animate-pulse rounded-3xl bg-white/5" />
-            <div className="h-28 animate-pulse rounded-3xl bg-white/5" />
-          </>
+          <div className="space-y-px">
+            <div className="h-20 animate-pulse bg-[#1c140c]/8" />
+            <div className="h-20 animate-pulse bg-[#1c140c]/8" />
+          </div>
         ) : null}
         {error && !board ? (
-          <div className="rounded-3xl border border-white/10 bg-[#141820] px-4 py-5">
-            <p className="font-medium">The scoreboard did not load.</p>
-            <p className="mt-1 text-sm text-white/55">{error} The replay below still works.</p>
+          <div className="px-4 py-5">
+            <p className="font-display text-xl uppercase">Scoreboard didn’t load.</p>
+            <p className="mt-1 text-sm">{error} The replay below still works.</p>
           </div>
         ) : null}
         {!loading && board && games.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-white/10 px-4 py-6 text-sm leading-6 text-white/55">
-            No NBA games on the schedule today. The replay is a full real game, so you can still try the button.
-          </div>
+          <p className="px-4 py-6 text-sm leading-6">
+            Nothing on the schedule today. The replay below is a real game, if you want to try the button.
+          </p>
         ) : null}
-        {games.map((game) => (
-          <GameRow key={game.id} game={game} />
-        ))}
+        {games.length > 0 ? (
+          <Link href={DEMO_CARD.href} className="flex items-baseline justify-between gap-3 border-b border-[#1c140c] px-4 py-3">
+            <div className="min-w-0">
+              <p className="font-display text-xs uppercase tracking-[0.14em] text-[#9a3412]">Replay, not live</p>
+              <p className="truncate text-sm">
+                {DEMO_CARD.away} at {DEMO_CARD.home}, {DEMO_CARD.when}. Final {DEMO_CARD.awayScore}–{DEMO_CARD.homeScore}.
+              </p>
+            </div>
+            <p className="font-display shrink-0 text-sm uppercase tracking-wide">Watch</p>
+          </Link>
+        ) : null}
+        <ul>
+          {games.map((game) => (
+            <li key={game.id} className="border-b border-[#1c140c]/15 last:border-b-0">
+              <GameRow game={game} />
+            </li>
+          ))}
+        </ul>
+        {!loading && games.length === 0 ? (
+          <Link href={DEMO_CARD.href} className="block border-t border-[#1c140c] px-4 py-4">
+            <p className="font-display text-xs uppercase tracking-[0.14em] text-[#9a3412]">Replay, not live</p>
+            <h2 className="font-display mt-1 text-3xl font-semibold uppercase leading-none">
+              {DEMO_CARD.away} at {DEMO_CARD.home}
+            </h2>
+            <p className="mt-2 text-sm leading-6">
+              {DEMO_CARD.when}, {DEMO_CARD.note}, {DEMO_CARD.venue}. Real {DEMO_CARD.source}, one play at a time. Final {DEMO_CARD.away} {DEMO_CARD.awayScore}, {DEMO_CARD.home} {DEMO_CARD.homeScore}.
+            </p>
+            <p className="font-display mt-3 text-sm uppercase tracking-wide">Watch the replay</p>
+          </Link>
+        ) : null}
       </div>
 
-      {!loading && games.length === 0 ? <ReplayCard featured /> : null}
-
       {error && board ? (
-        <p className="mt-3 text-xs text-[#ffb089]">Scoreboard refresh failed. Showing the last one that loaded.</p>
+        <p className="mt-3 text-xs text-[#9a3412]">Scoreboard refresh failed. Showing the last one that loaded.</p>
       ) : null}
 
-      <footer className="mt-10 text-xs leading-5 text-white/35">
+      <footer className="mt-8 text-xs leading-5 text-[#1c140c]/60">
         Scores and plays come from the public ESPN NBA feed. Explanations are templates in this repo. Whistle is not affiliated with the NBA or ESPN.
       </footer>
     </Shell>
@@ -99,91 +127,39 @@ export function GamesBoard() {
 }
 
 function GameRow({ game }: { game: GameCard }) {
+  const when = game.status === "in" ? "Live" : game.status === "pre" ? formatTipTime(game.startTime) : game.statusText;
   return (
-    <Link
-      href={`/game/${game.id}`}
-      className="block rounded-3xl border border-white/8 bg-[#141820] px-4 py-4 transition hover:border-white/20"
-    >
-      <div className="flex items-center justify-between text-xs">
-        {game.status === "in" ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e23b3b] px-2 py-0.5 font-bold text-white">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-            LIVE
-          </span>
-        ) : (
-          <span className="text-white/50">{game.status === "pre" ? formatTipTime(game.startTime) : game.statusText}</span>
-        )}
-        <span className="text-white/35">{game.broadcast}</span>
-      </div>
-      <div className="mt-3 space-y-2">
-        <Side game={game} side="away" />
-        <Side game={game} side="home" />
-      </div>
-      <p className="mt-3 truncate text-xs text-white/40">
-        {game.venue}
-        {game.status === "in" ? ` · ${game.statusText}` : ""}
-      </p>
-    </Link>
-  );
-}
-
-function Side({ game, side }: { game: GameCard; side: "home" | "away" }) {
-  const team = side === "home" ? game.home : game.away;
-  const score = side === "home" ? game.homeScore : game.awayScore;
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <div className="flex items-center gap-3">
-        <span
-          className="flex h-8 w-8 items-center justify-center rounded-full text-[10px] font-bold"
-          style={{ backgroundColor: `#${team.color}`, color: textOn(team.color) }}
-        >
-          {team.abbreviation}
-        </span>
-        <span className="text-[15px] font-medium">{team.displayName}</span>
-      </div>
-      <span className="text-xl font-semibold tabular-nums">{game.status === "pre" ? "" : score}</span>
-    </div>
-  );
-}
-
-function ReplayStrip() {
-  return (
-    <Link
-      href={DEMO_CARD.href}
-      className="mt-5 flex items-center justify-between gap-3 rounded-2xl border border-[#ff7a1a]/40 bg-[#24180f] px-4 py-3"
-    >
+    <Link href={`/game/${game.id}`} className="grid grid-cols-[4.5rem_1fr_auto] items-center gap-3 px-4 py-3">
+      <p className="font-display text-xs uppercase leading-tight tracking-wide text-[#1c140c]/70">{when}</p>
       <div className="min-w-0">
-        <p className="text-[11px] font-semibold tracking-[0.14em] text-[#ff9a3c]">REPLAY A REAL GAME</p>
-        <p className="truncate text-sm text-[#ffd7bf]">
-          {DEMO_CARD.away} at {DEMO_CARD.home} · {DEMO_CARD.when} · final {DEMO_CARD.awayScore}–{DEMO_CARD.homeScore}
+        <p className="font-display truncate text-2xl font-semibold uppercase leading-none tracking-wide">
+          <Abbr team={game.away} />
+          {game.away.abbreviation}
+          <span className="px-1.5 text-[0.65em] tracking-normal text-[#1c140c]/45"> at </span>
+          <Abbr team={game.home} />
+          {game.home.abbreviation}
+        </p>
+        <p className="mt-1 truncate text-xs text-[#1c140c]/65">
+          {game.away.shortName} at {game.home.shortName}
+          {game.venue ? ` · ${game.venue}` : ""}
+          {game.broadcast ? ` · ${game.broadcast}` : ""}
         </p>
       </div>
-      <p className="shrink-0 text-sm font-semibold text-[#ff9a3c]">Watch</p>
+      <p className="font-display text-right text-2xl font-semibold tabular-nums leading-none">
+        {game.status === "pre" ? "" : (
+          <>
+            {game.awayScore}
+            <span className="px-0.5 text-[#1c140c]/35">–</span>
+            {game.homeScore}
+          </>
+        )}
+      </p>
     </Link>
   );
 }
 
-function ReplayCard({ featured = false }: { featured?: boolean }) {
+function Abbr({ team }: { team: GameCard["home"] }) {
   return (
-    <Link
-      href={DEMO_CARD.href}
-      className={
-        featured
-          ? "mt-6 block rounded-[28px] border border-[#ff7a1a]/40 bg-gradient-to-br from-[#2a1a10] to-[#141820] px-5 py-5"
-          : "block rounded-3xl border border-white/8 bg-[#141820] px-4 py-4"
-      }
-    >
-      <p className="text-[11px] font-semibold tracking-[0.14em] text-[#ff9a3c]">REPLAY A REAL GAME</p>
-      <h2 className="mt-1 text-xl font-semibold tracking-tight">
-        {DEMO_CARD.away} at {DEMO_CARD.home}
-      </h2>
-      <p className="mt-1 text-sm text-white/55">
-        {DEMO_CARD.when} · {DEMO_CARD.note} · {DEMO_CARD.venue}
-      </p>
-      <p className="mt-3 max-w-lg text-sm leading-6 text-white/75">
-        Nothing has to be live. This plays back the real {DEMO_CARD.source}, one play at a time, final {DEMO_CARD.away} {DEMO_CARD.awayScore}, {DEMO_CARD.home} {DEMO_CARD.homeScore}.
-      </p>
-      <p className="mt-4 text-sm font-semibold text-[#ff9a3c]">Watch the replay</p>
-    </Link>
+    <span className="mr-1.5 inline-block h-3 w-1 align-[-1px]" style={{ background: paint(team.color) }} aria-hidden />
   );
 }

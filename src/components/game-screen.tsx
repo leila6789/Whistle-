@@ -59,11 +59,11 @@ export function GameScreen({ id }: { id: string }) {
     return (
       <div className="mx-auto w-full max-w-[440px] px-4 pt-6">
         <div className="h-14" />
-        <div className="h-44 animate-pulse rounded-[28px] bg-white/5" />
+        <div className="h-36 animate-pulse bg-[#1c140c]/10" />
         <div className="mt-4 space-y-2">
-          <div className="h-16 animate-pulse rounded-2xl bg-white/5" />
-          <div className="h-16 animate-pulse rounded-2xl bg-white/5" />
-          <div className="h-16 animate-pulse rounded-2xl bg-white/5" />
+          <div className="h-12 animate-pulse bg-[#1c140c]/10" />
+          <div className="h-12 animate-pulse bg-[#1c140c]/10" />
+          <div className="h-12 animate-pulse bg-[#1c140c]/10" />
         </div>
       </div>
     );
@@ -72,8 +72,8 @@ export function GameScreen({ id }: { id: string }) {
   if (!game) {
     return (
       <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-6 text-center">
-        <h1 className="text-xl font-semibold">Could not open this game</h1>
-        <p className="mt-2 text-sm leading-6 text-white/55">{error ?? "The feed did not return it."}</p>
+        <h1 className="font-display text-4xl font-semibold uppercase">Could not open this game</h1>
+        <p className="mt-2 text-sm leading-6">{error ?? "The feed did not return it."}</p>
         <div className="mt-6 flex justify-center gap-2">
           <Button variant="outline" onClick={() => window.location.reload()}>
             Try again
@@ -91,9 +91,9 @@ export function GameScreen({ id }: { id: string }) {
       game={game}
       notice={
         error ? (
-          <p className="mt-2 text-center text-xs text-[#ffb089]">Feed hiccup — retrying. The last plays are still here.</p>
+          <p className="mt-2 text-center text-xs text-[#9a3412]">Feed hiccup. Still showing the last plays.</p>
         ) : game.status === "post" ? (
-          <p className="mt-2 text-center text-xs text-white/40">This game is over. You can still explain the last plays.</p>
+          <p className="mt-2 text-center text-xs">This one’s over. You can still ask about the last plays.</p>
         ) : null
       }
     />

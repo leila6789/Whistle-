@@ -23,6 +23,8 @@ export type FeedPlay = {
   scoreValue: number;
   teamId?: string;
   wallclock?: string;
+  /** Half-court feet from ESPN. Absent when the feed has no real spot. */
+  coordinate?: { x: number; y: number };
 };
 
 export type DemoFixture = {

@@ -3,6 +3,7 @@ import {
   ESPN_SUMMARY,
 } from "@/lib/config";
 import { prettyClock, quarterHeadline } from "@/lib/clock";
+import { saneCoordinate } from "@/lib/spot";
 import type { FeedPlay, GameCard, GamePayload, GameStatus, Scoreboard, Team } from "@/lib/types";
 
 type EspnTeam = {
@@ -47,6 +48,7 @@ type EspnPlay = {
   scoreValue?: number;
   team?: { id?: string };
   wallclock?: string;
+  coordinate?: { x?: number; y?: number };
 };
 
 function clean(value: string | undefined): string {
@@ -136,6 +138,7 @@ export function normalizePlay(raw: EspnPlay): FeedPlay | null {
     scoreValue: Number(raw.scoreValue ?? 0),
     teamId: raw.team?.id ? String(raw.team.id) : undefined,
     wallclock: raw.wallclock || undefined,
+    coordinate: saneCoordinate(raw.coordinate),
   };
 }
 
