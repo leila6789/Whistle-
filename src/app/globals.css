@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+:root {
+  --floor: #d7b48a;
+  --floor-deep: #c4a06a;
+  --ink: #1c140c;
+  --paper: #f4efe4;
+  --board: #14110e;
+  --ball: #e25b1a;
+  --line: rgba(244, 239, 228, 0.55);
+  --background: var(--floor);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+}
+
+body {
+  background-color: var(--floor);
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(92, 52, 24, 0.045) 0 2px,
+      transparent 2px 18px
+    );
+  color: var(--ink);
+  font-family: var(--font-body), "Source Sans 3", sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), "Arial Narrow", sans-serif;
+}
+
+.game-floor {
+  background-color: var(--floor);
+  background-image:
+    linear-gradient(180deg, color-mix(in srgb, var(--team-away) 16%, transparent), transparent 240px),
+    linear-gradient(0deg, color-mix(in srgb, var(--team-home) 12%, transparent), transparent 200px),
+    repeating-linear-gradient(
+      90deg,
+      rgba(92, 52, 24, 0.05) 0 2px,
+      transparent 2px 18px
+    );
+}
+
+.paper {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.board {
+  background: var(--board);
+  color: var(--paper);
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ref-arm {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: ref-raise 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.whistle-puff {
+  animation: puff 0.4s ease-out 0.12s both;
+}
+
+@keyframes ref-raise {
+  from {
+    transform: rotate(72deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes puff {
+  0% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
